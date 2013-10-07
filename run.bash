@@ -76,10 +76,10 @@ then
 # Run!
 elif [[ $1 == run ]]
 then
-  PERSON=$(sqlite3 $DB "SELECT id,email FROM people WHERE run = 0 ORDER BY id DESC;")
+  PERSON=$(sqlite3 $DB "SELECT id,email FROM people WHERE run = 0 ORDER BY id ASC LIMIT 1;")
   if [[ -z $PERSON ]]
   then
-    PERSON=$(sqlite3 $DB "UPDATE people SET run = 0; SELECT id,email FROM people WHERE run = 0 ORDER BY id DESC;")
+    PERSON=$(sqlite3 $DB "UPDATE people SET run = 0; SELECT id,email FROM people WHERE run = 0 ORDER BY id ASC LIMIT 1;")
   fi
   if [[ -z $PERSON ]]
   then
@@ -91,6 +91,7 @@ then
   sendmail "$PEMAIL" <<MSG
 subject: $(date +"%m/%d/%y"): $SUBJECT
 from: $FROMNAME <$FROMEMAIL>
+to: $PEMAIL
 $MESSAGE
 MSG
   sqlite3 $DB "UPDATE people SET run = 2 WHERE id = '""$PID""';"
