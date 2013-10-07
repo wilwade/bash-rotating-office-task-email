@@ -20,7 +20,7 @@ Today is your day to do the trash! If you cannot do it you must watch this video
 Thanks!
 EOM
 )
-
+DB="/var/trash.db"
 # Make sure that the requirements are there.
 REQUIREMENTS="sqlite3 sendmail"
 
@@ -33,7 +33,7 @@ do
   fi
 done
 
-sqlite3 db.db "CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, email TEXT, run INTEGER DEFAULT 0);"
+sqlite3 $DB "CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, email TEXT, run INTEGER DEFAULT 0);"
 
 # Add User
 if [[ $1 == add ]]
@@ -52,14 +52,14 @@ then
     echo "Email is required."
     exit 1
   fi
-  sqlite3 db.db "INSERT INTO people (name, email) VALUES ('""$NAME""','""$EMAIL""');"
+  sqlite3 $DB "INSERT INTO people (name, email) VALUES ('""$NAME""','""$EMAIL""');"
   echo "Added ""$NAME" "$EMAIL"
   exit 0
 # Remove User
 elif [[ $1 == rm ]]
 then
   echo "People:"
-  sqlite3 db.db "SELECT id,name,email FROM people;"
+  sqlite3 $DB "SELECT id,name,email FROM people;"
   echo -n "Number by the person you wish to remove [Enter to Cancel]: "
   read RMID
   if [[ ! $RMID != *[!0-9]* ]]
@@ -71,15 +71,15 @@ then
     echo ""
     exit 0
   fi
-  sqlite3 db.db "DELETE FROM people WHERE id = "$RMID";"
+  sqlite3 $DB "DELETE FROM people WHERE id = "$RMID";"
   exit 0
 # Run!
 elif [[ $1 == run ]]
 then
-  PERSON=$(sqlite3 db.db "SELECT id,email FROM people WHERE run = 0 ORDER BY id DESC;")
+  PERSON=$(sqlite3 $DB "SELECT id,email FROM people WHERE run = 0 ORDER BY id DESC;")
   if [[ -z $PERSON ]]
   then
-    PERSON=$(sqlite3 db.db "UPDATE people SET run = 0; SELECT id,email FROM people WHERE run = 0 ORDER BY id DESC;")
+    PERSON=$(sqlite3 $DB "UPDATE people SET run = 0; SELECT id,email FROM people WHERE run = 0 ORDER BY id DESC;")
   fi
   if [[ -z $PERSON ]]
   then
@@ -93,7 +93,7 @@ subject: $(date +"%m/%d/%y"): $SUBJECT
 from: $FROMNAME <$FROMEMAIL>
 $MESSAGE
 MSG
-  sqlite3 db.db "UPDATE people SET run = 2 WHERE id = '""$PID""';"
+  sqlite3 $DB "UPDATE people SET run = 2 WHERE id = '""$PID""';"
   exit 0
 # Help (Bad Arguments)
 else
