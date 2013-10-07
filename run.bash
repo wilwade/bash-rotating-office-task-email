@@ -18,7 +18,8 @@ Hello!
 Today is your day to do the trash! If you cannot do it you must watch this video (without skipping) http://www.youtube.com/watch?v=jI-kpVh6e1U and ask someone else, but you need to make sure it happens.
 
 Thanks!
-EOM)
+EOM
+)
 
 # Make sure that the requirements are there.
 REQUIREMENTS="sqlite3 sendmail"
@@ -92,7 +93,7 @@ subject: $(date +"%m/%d/%y"): $SUBJECT
 from: $FROMNAME <$FROMEMAIL>
 $MESSAGE
 MSG
-  sqlite3 db.db "UPDATE people SET run = 1 WHERE id = ""$PID"";"
+  sqlite3 db.db "UPDATE people SET run = 2 WHERE id = '""$PID""';"
   exit 0
 # Help (Bad Arguments)
 else
